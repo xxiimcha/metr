@@ -1,4 +1,3 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -9,6 +8,7 @@ import RegisterBuyer from './pages/RegisterBuyer';
 import BuyerDashboard from './pages/buyer/BuyerDashboard';
 import SellerDashboard from './pages/seller/SellerDashboard';
 import InventoryManagement from './pages/seller/InventoryManagement';
+import ProductDetail from './pages/ProductDetail'; // Import the ProductDetail component
 
 const AppContainer = styled.div`
   background-color: ${colors.offWhite};
@@ -76,6 +76,7 @@ function App() {
         <Route path="/seller-dashboard/*" element={<SellerDashboard />}>
           <Route path="supply/inventory" element={<InventoryManagement />} />
         </Route>
+        <Route path="/product/:id" element={<ProductDetail />} /> {/* Add ProductDetail route */}
         <Route path="/logout" element={<Logout />} />
       </Routes>
     </Router>

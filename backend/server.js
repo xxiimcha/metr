@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const port = 5000;
@@ -9,6 +10,7 @@ const port = 5000;
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve files from the uploads folder
 
 // MongoDB connection
 mongoose.connect('mongodb+srv://drkkuser:Tn6Sn12P2ByOo8Rl@drkk-erp.tpqeeml.mongodb.net/metr?retryWrites=true&w=majority&appName=drkk-erp', {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import colors from '../../styles/colors';
 import AddRecordModal from '../../components/AddRecordModal';
-import axios from 'axios'; // Import axios for making HTTP requests
+import axios from 'axios';
 
 const Container = styled.div`
   padding: 20px;
@@ -56,7 +56,7 @@ const InventoryManagement = () => {
 
   const fetchInventory = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/inventory'); // Adjust the URL to match your backend
+      const response = await axios.get('http://localhost:5000/inventory');
       setInventory(response.data);
     } catch (error) {
       console.error('Error fetching inventory:', error);
@@ -65,8 +65,19 @@ const InventoryManagement = () => {
 
   const handleAddRecord = async (newRecord) => {
     try {
-      console.log('Sending new inventory item:', newRecord);
-      const response = await axios.post('http://localhost:5000/inventory/add', newRecord);
+      const formData = new FormData();
+      formData.append('name', newRecord.productName);
+      formData.append('modelNumber', newRecord.modelNumber);
+      formData.append('price', newRecord.price);
+      newRecord.pictures.forEach((picture) => {
+        formData.append('pictures', picture);
+      });
+
+      const response = await axios.post('http://localhost:5000/inventory/add', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       setInventory([...inventory, response.data]);
     } catch (error) {
       console.error('Error adding new record:', error);

@@ -66,14 +66,13 @@ const AddRecordModal = ({ isOpen, onRequestClose, onAddRecord }) => {
   const [pictures, setPictures] = useState([]);
 
   const handleAddRecord = () => {
-    const newRecord = { name: productName, modelNumber, price, pictures };
+    const newRecord = { productName, modelNumber, price, pictures };
     onAddRecord(newRecord);
     onRequestClose();
   };
 
   const handleFileChange = (event) => {
-    const files = Array.from(event.target.files).map(file => URL.createObjectURL(file));
-    setPictures(files);
+    setPictures([...event.target.files]);
   };
 
   return (

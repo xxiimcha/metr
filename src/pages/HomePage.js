@@ -1,8 +1,9 @@
-// src/pages/HomePage.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import colors from '../styles/colors';
 import Header from '../components/Header';
+import axios from 'axios';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 const HomePageContainer = styled.div`
   background-color: ${colors.offWhite};
@@ -26,30 +27,53 @@ const ProductGrid = styled.div`
   max-width: 1200px;
 `;
 
-const ProductCard = styled.div`
+const ProductCard = styled(Link)` // Use Link to wrap the card
   background-color: ${colors.lightBlue};
   padding: 20px;
   border-radius: 10px;
   text-align: center;
   color: ${colors.offWhite};
+  text-decoration: none;
+
+  &:hover {
+    background-color: ${colors.blue};
+  }
 `;
 
-const products = [
-  { id: 1, name: 'Product 1', description: 'Description of Product 1' },
-  { id: 2, name: 'Product 2', description: 'Description of Product 2' },
-  { id: 3, name: 'Product 3', description: 'Description of Product 3' },
-];
+const ProductImage = styled.img`
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 10px;
+`;
 
 const HomePage = () => {
+  const [products, setProducts] = useState([]);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/inventory');
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   return (
     <HomePageContainer>
       <Header />
       <Title>Welcome to Metr</Title>
       <ProductGrid>
         {products.map(product => (
-          <ProductCard key={product.id}>
+          <ProductCard key={product._id} to={`/product/${product._id}`}>
+            <ProductImage src={`http://localhost:5000/${product.pictures[0]}`} alt={product.name} />
             <h2>{product.name}</h2>
-            <p>{product.description}</p>
+            <p>{product.modelNumber}</p>
+            <p>${product.price.toFixed(2)}</p>
           </ProductCard>
         ))}
       </ProductGrid>
