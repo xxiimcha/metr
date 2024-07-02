@@ -1,21 +1,22 @@
-// backend/routes/login.js
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
+const User = require('../models/User'); // Assuming you have a User model
 
 router.post('/', async (req, res) => {
-  const { email, password } = req.body;
-
   try {
-    const user = await User.findOne({ email: email.trim(), password: password.trim() });
-    if (user) {
-      res.status(200).json({ message: 'Login successful', userType: user.userType });
-    } else {
-      res.status(401).json({ message: 'Invalid email or password' });
+    const { email, password } = req.body;
+    console.log('Login request received:', email, password); // Debugging log
+
+    const user = await User.findOne({ email, password });
+    if (!user) {
+      console.log('Invalid credentials'); // Debugging log
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    res.status(200).json({ id: user._id, email: user.email, userType: user.userType }); // Return user ID, email, and type
   } catch (error) {
-    console.error('Error logging in:', error);
-    res.status(500).json({ message: 'Error logging in', error });
+    console.error('Error during login:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 

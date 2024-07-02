@@ -1,10 +1,10 @@
-// src/components/LoginModal.js
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import styled from 'styled-components';
 import colors from '../styles/colors';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext'; // Import useUser hook
+import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 
 Modal.setAppElement('#root');
 
@@ -38,11 +38,6 @@ const Title = styled.h2`
   text-align: center;
 `;
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-
 const Input = styled.input`
   padding: 10px;
   margin: 10px 0;
@@ -70,20 +65,31 @@ const LoginButton = styled.button`
 const LoginModal = ({ isOpen, onRequestClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  const { setUser } = useUser(); // Get setUser function from context
+  const navigate = useNavigate(); // Get the navigate function from react-router-dom
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/login', { email: email.trim(), password: password.trim() });
-      const { userType } = response.data;
-      if (userType === 'buyer') {
-        navigate('/buyer-dashboard');
-      } else if (userType === 'seller') {
-        navigate('/seller-dashboard');
+      console.log('Login attempt with email:', email); // Debugging log
+      const response = await axios.post('http://localhost:5000/login', { email, password });
+      console.log('Login response:', response); // Debugging log
+      if (response.status === 200) {
+        const userData = response.data;
+        console.log('User data:', userData); // Debugging log
+        setUser({ id: userData.id, email: userData.email, userType: userData.userType }); // Store user ID and type in context
+        onRequestClose(); // Close the modal on successful login
+        // Redirect based on user type
+        if (userData.userType === 'seller') {
+          navigate('/seller-dashboard');
+        } else if (userData.userType === 'buyer') {
+          navigate('/buyer-dashboard');
+        }
+      } else {
+        alert('Login failed');
       }
     } catch (error) {
-      alert('Invalid email or password');
+      console.error('Error logging in:', error);
+      alert('Login failed');
     }
   };
 
@@ -109,11 +115,19 @@ const LoginModal = ({ isOpen, onRequestClose }) => {
       <ModalContent>
         <CloseButton onClick={onRequestClose}>&times;</CloseButton>
         <Title>Login</Title>
-        <Form onSubmit={handleLogin}>
-          <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          <LoginButton type="submit">Login</LoginButton>
-        </Form>
+        <Input 
+          type="email" 
+          placeholder="Email" 
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
+        />
+        <Input 
+          type="password" 
+          placeholder="Password" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
+        />
+        <LoginButton onClick={handleLogin}>Login</LoginButton>
       </ModalContent>
     </Modal>
   );

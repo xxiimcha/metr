@@ -4,6 +4,7 @@ import colors from '../styles/colors';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../components/Header';
+import LoginModal from '../components/LoginModal';
 
 const ProductDetailContainer = styled.div`
   background-color: ${colors.offWhite};
@@ -77,6 +78,8 @@ const OrderButton = styled.button`
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add state for login status
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // Add state for modal visibility
 
   const fetchProduct = async () => {
     try {
@@ -90,6 +93,15 @@ const ProductDetail = () => {
   useEffect(() => {
     fetchProduct();
   }, [id]);
+
+  const handleOrderClick = () => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+    } else {
+      // Proceed with the order
+      alert('Order placed successfully!');
+    }
+  };
 
   if (!product) {
     return <p>Loading...</p>;
@@ -105,9 +117,10 @@ const ProductDetail = () => {
           <ModelNumber>Model: {product.modelNumber}</ModelNumber>
           <Price>${product.price.toFixed(2)}</Price>
           <Description>{product.description}</Description>
-          <OrderButton>Order</OrderButton>
+          <OrderButton onClick={handleOrderClick}>Order</OrderButton>
         </ProductInfo>
       </ProductDetailContent>
+      <LoginModal isOpen={isLoginModalOpen} onRequestClose={() => setIsLoginModalOpen(false)} />
     </ProductDetailContainer>
   );
 };

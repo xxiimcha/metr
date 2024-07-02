@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import colors from '../../styles/colors';
 import AddRecordModal from '../../components/AddRecordModal';
 import axios from 'axios';
+import { useUser } from '../../context/UserContext'; // Import useUser hook
 
 const Container = styled.div`
   padding: 20px;
@@ -53,6 +54,7 @@ const Button = styled.button`
 const InventoryManagement = () => {
   const [inventory, setInventory] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user } = useUser(); // Get the user context
 
   const fetchInventory = async () => {
     try {
@@ -65,10 +67,16 @@ const InventoryManagement = () => {
 
   const handleAddRecord = async (newRecord) => {
     try {
+      if (!user) {
+        alert('You must be logged in to add a record.');
+        return;
+      }
+
       const formData = new FormData();
       formData.append('name', newRecord.productName);
       formData.append('modelNumber', newRecord.modelNumber);
       formData.append('price', newRecord.price);
+      formData.append('userId', user.id); // Add user ID to the form data
       newRecord.pictures.forEach((picture) => {
         formData.append('pictures', picture);
       });

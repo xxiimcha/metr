@@ -18,14 +18,15 @@ const upload = multer({ storage });
 // Endpoint to add a new inventory record with file uploads
 router.post('/add', upload.array('pictures', 10), async (req, res) => {
   try {
-    const { name, modelNumber, price, description } = req.body; // Added description
+    const { name, modelNumber, price, userId, description } = req.body; // Added userId and description
     const pictures = req.files.map(file => file.path); // Get the paths of uploaded files
 
     const newInventoryItem = new Inventory({
       name,
       modelNumber,
       price,
-      description, // Save description
+      userId, // Save the user ID
+      description, // Save the description
       pictures
     });
 
