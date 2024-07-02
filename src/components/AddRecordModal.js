@@ -1,10 +1,7 @@
-// src/components/LoginModal.js
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import styled from 'styled-components';
 import colors from '../styles/colors';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 Modal.setAppElement('#root');
 
@@ -15,7 +12,7 @@ const ModalContent = styled.div`
   background-color: ${colors.offWhite};
   border-radius: 10px;
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   box-sizing: border-box;
 `;
 
@@ -38,11 +35,6 @@ const Title = styled.h2`
   text-align: center;
 `;
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-
 const Input = styled.input`
   padding: 10px;
   margin: 10px 0;
@@ -52,7 +44,7 @@ const Input = styled.input`
   box-sizing: border-box;
 `;
 
-const LoginButton = styled.button`
+const Button = styled.button`
   padding: 10px;
   margin-top: 10px;
   background-color: ${colors.blue};
@@ -67,24 +59,21 @@ const LoginButton = styled.button`
   }
 `;
 
-const LoginModal = ({ isOpen, onRequestClose }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+const AddRecordModal = ({ isOpen, onRequestClose, onAddRecord }) => {
+  const [productName, setProductName] = useState('');
+  const [modelNumber, setModelNumber] = useState('');
+  const [price, setPrice] = useState('');
+  const [pictures, setPictures] = useState([]);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:5000/login', { email: email.trim(), password: password.trim() });
-      const { userType } = response.data;
-      if (userType === 'buyer') {
-        navigate('/buyer-dashboard');
-      } else if (userType === 'seller') {
-        navigate('/seller-dashboard');
-      }
-    } catch (error) {
-      alert('Invalid email or password');
-    }
+  const handleAddRecord = () => {
+    const newRecord = { name: productName, modelNumber, price, pictures };
+    onAddRecord(newRecord);
+    onRequestClose();
+  };
+
+  const handleFileChange = (event) => {
+    const files = Array.from(event.target.files).map(file => URL.createObjectURL(file));
+    setPictures(files);
   };
 
   return (
@@ -108,15 +97,37 @@ const LoginModal = ({ isOpen, onRequestClose }) => {
     >
       <ModalContent>
         <CloseButton onClick={onRequestClose}>&times;</CloseButton>
-        <Title>Login</Title>
-        <Form onSubmit={handleLogin}>
-          <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          <LoginButton type="submit">Login</LoginButton>
-        </Form>
+        <Title>Add New Record</Title>
+        <Input 
+          type="text" 
+          placeholder="Product Name" 
+          value={productName} 
+          onChange={(e) => setProductName(e.target.value)} 
+          required 
+        />
+        <Input 
+          type="text" 
+          placeholder="Model Number" 
+          value={modelNumber} 
+          onChange={(e) => setModelNumber(e.target.value)} 
+          required 
+        />
+        <Input 
+          type="number" 
+          placeholder="Price" 
+          value={price} 
+          onChange={(e) => setPrice(e.target.value)} 
+          required 
+        />
+        <Input 
+          type="file" 
+          multiple 
+          onChange={handleFileChange} 
+        />
+        <Button onClick={handleAddRecord}>Add Record</Button>
       </ModalContent>
     </Modal>
   );
 };
 
-export default LoginModal;
+export default AddRecordModal;

@@ -1,4 +1,3 @@
-// backend/server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -26,8 +25,12 @@ db.once('open', () => {
 // Routes
 const registerSellerRoute = require('./routes/registerSeller');
 const registerBuyerRoute = require('./routes/registerBuyer');
+const loginRoute = require('./routes/login');
+const inventoryRoute = require('./routes/inventory'); // Add inventory route
 app.use('/register-seller', registerSellerRoute);
 app.use('/register-buyer', registerBuyerRoute);
+app.use('/login', loginRoute);
+app.use('/inventory', inventoryRoute); // Use inventory route
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

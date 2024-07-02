@@ -1,11 +1,14 @@
 // src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import colors from './styles/colors';
 import HomePage from './pages/HomePage';
 import RegisterSeller from './pages/RegisterSeller';
 import RegisterBuyer from './pages/RegisterBuyer';
+import BuyerDashboard from './pages/buyer/BuyerDashboard';
+import SellerDashboard from './pages/seller/SellerDashboard';
+import InventoryManagement from './pages/seller/InventoryManagement';
 
 const AppContainer = styled.div`
   background-color: ${colors.offWhite};
@@ -46,6 +49,21 @@ const Home = () => (
   </AppContainer>
 );
 
+const Logout = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Perform logout logic here, e.g., clear tokens, session, etc.
+    navigate('/');
+  };
+
+  return (
+    <AppContainer>
+      <Button onClick={handleLogout}>Logout</Button>
+    </AppContainer>
+  );
+};
+
 function App() {
   return (
     <Router>
@@ -54,6 +72,11 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/register-seller" element={<RegisterSeller />} />
         <Route path="/register-buyer" element={<RegisterBuyer />} />
+        <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
+        <Route path="/seller-dashboard/*" element={<SellerDashboard />}>
+          <Route path="supply/inventory" element={<InventoryManagement />} />
+        </Route>
+        <Route path="/logout" element={<Logout />} />
       </Routes>
     </Router>
   );
